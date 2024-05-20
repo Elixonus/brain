@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char** argv)
 {
@@ -57,10 +58,84 @@ int main(int argc, char** argv)
 	char *cell = tape;
 	for(char *inst = prog; inst < prog + size; inst++)
 	{
-		fprintf("%c", *inst);
+		switch(*inst)
+		{
+			case '<':
+				cell--;
+				if(cell < tape)
+				{
+					char *swap = realloc(tape, size * 2);
+					if(swap == NULL)
+					{
+						fprintf(stderr, "(@): realloc error (%dB)\n", size * 2);
+						return EXIT_FAILURE;
+					}
+					memset(swap, 0, size);
+					memcpy(swap + size, tape, size);
+					cell += swap - tape + size;
+					free(tape);
+					tape = swap;
+					size *= 2;
+				}
+				break;
+			case '>':
+				cell++;
+				if(cell >= tape + size)
+				{
+					char *swap = realloc(tape, size * 2);
+					if(swap == NULL)
+					{
+						fprintf(stderr, "(@): realloc error (%dB)\n", size * 2);
+						return EXIT_FAILURE;
+					}
+					memset(swap + size, 0, size);
+					memcpy(swap, tape, size);
+					cell += swap - tape;
+					free(tape);
+					tape = swap;
+					size *= 2;
+				}
+				break;
+			case '-':
+				(*cell)--;
+				if(*cell < 0)
+				{
+					*cell %= 256;
+				}
+				break;
+			case '+':
+				(*cell)++;
+				if(*cell >= 256)
+				{
+					*cell %= 256;
+				}
+				break;
+			case '[':
+				if(*cell == 0)
+				{
+					while(*inst != ']')
+					{
+						inst++;
+					}
+				}
+				break;
+			case ']':
+				if(*cell != 0)
+				{
+					while(*inst != '[')
+					{
+						inst--;
+					}
+				}
+				break;
+			case '.':
+				fputc(*cell, stdout);
+				break;
+			case ',':
+				*cell = fgetc(stdin);
+				break;
+		}
 	}
-	fprintf("\n");
-
 	free(prog);
 	free(tape);
 	return EXIT_SUCCESS;

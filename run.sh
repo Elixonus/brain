@@ -1,0 +1,1 @@
+./bin/brain test.b
