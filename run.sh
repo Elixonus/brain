@@ -1,1 +1,1 @@
-./bin/brain test.b
+./bin/brain gol.b
