@@ -58,6 +58,7 @@ int main(int argc, char** argv)
 	char *cell = tape;
 	for(char *inst = prog; inst < prog + size; inst++)
 	{
+		printf("%d | %d\n", cell - tape, bulk);
 		switch(*inst)
 		{
 			case '<':
@@ -75,7 +76,7 @@ int main(int argc, char** argv)
 					memcpy(swap + size, tape, size);
 					cell += swap - tape + size;
 					tape = swap;
-					size *= 2;
+					bulk *= 2;
 				}
 				break;
 			case '>':
@@ -93,11 +94,11 @@ int main(int argc, char** argv)
 					memcpy(swap, tape, size);
 					cell += swap - tape;
 					tape = swap;
-					size *= 2;
+					bulk *= 2;
 				}
 				break;
 			case '-':
-				printf("%d | %d\n", cell - tape, bulk);
+				//printf("%d | %d\n", cell - tape, bulk);
 				(*cell)--;
 				if(*cell < 0)
 				{
@@ -105,7 +106,7 @@ int main(int argc, char** argv)
 				}
 				break;
 			case '+':
-				printf("%d | %d\n", cell - tape, bulk);
+				//printf("%d | %d\n", cell - tape, bulk);
 				(*cell)++;
 				if(*cell >= 256)
 				{
