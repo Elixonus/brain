@@ -47,7 +47,7 @@ int main(int argc, char** argv)
 		fprintf(stderr, "(@): close error (%s)\n", argv[1]);
 		return EXIT_FAILURE;
 	}
-	int bulk = 1000000;
+	int bulk = 1;
 	char *tape = malloc(bulk);
 	if(tape == NULL)
 	{
@@ -58,59 +58,51 @@ int main(int argc, char** argv)
 	char *cell = tape;
 	for(char *inst = prog; inst < prog + size; inst++)
 	{
-		printf("%d | %d\n", cell - tape, bulk);
 		switch(*inst)
 		{
 			case '<':
 				cell--;
 				if(cell < tape)
 				{
-					cell = tape;
-					char *swap = realloc(tape, size * 2);
+					char *swap = realloc(tape, bulk * 2);
 					if(swap == NULL)
 					{
-						fprintf(stderr, "(@): realloc error (%dB)\n", size * 2);
+						fprintf(stderr, "(@): realloc error (%dB)\n", bulk * 2);
 						return EXIT_FAILURE;
 					}
-					memset(swap, 0, size);
-					memcpy(swap + size, tape, size);
-					cell += swap - tape + size;
+					memcpy(swap + bulk, swap, bulk);
+					cell += swap - tape + bulk;
 					tape = swap;
 					bulk *= 2;
 				}
 				break;
 			case '>':
 				cell++;
-				if(cell >= tape + size)
+				if(cell >= tape + bulk)
 				{
-					cell = tape + size - 1;
-					char *swap = realloc(tape, size * 2);
+					char *swap = realloc(tape, bulk * 2);
 					if(swap == NULL)
 					{
-						fprintf(stderr, "(@): realloc error (%dB)\n", size * 2);
+						fprintf(stderr, "(@): realloc error (%dB)\n", bulk * 2);
 						return EXIT_FAILURE;
 					}
-					memset(swap + size, 0, size);
-					memcpy(swap, tape, size);
 					cell += swap - tape;
 					tape = swap;
 					bulk *= 2;
 				}
 				break;
 			case '-':
-				//printf("%d | %d\n", cell - tape, bulk);
 				(*cell)--;
 				if(*cell < 0)
 				{
-					//*cell %= 256;
+					*cell %= 256;
 				}
 				break;
 			case '+':
-				//printf("%d | %d\n", cell - tape, bulk);
 				(*cell)++;
 				if(*cell >= 256)
 				{
-					//*cell %= 256;
+					*cell %= 256;
 				}
 				break;
 			case '[':
