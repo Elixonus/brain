@@ -56,6 +56,7 @@ int main(int argc, char** argv)
 	}
 	memset(tape, 0, bulk);
 	char *cell = tape;
+	int i = 0;
 	for(char *inst = prog; inst < prog + size; inst++)
 	{
 		switch(*inst)
@@ -125,12 +126,18 @@ int main(int argc, char** argv)
 				break;
 			case '.':
 				fputc(*cell, stdout);
+				//fprintf(stdout, "number:%d\n", *cell);
 				break;
 			case ',':
 				*cell = fgetc(stdin);
 				break;
+			default:
+				i--;
+				break;
 		}
+		i++;
 	}
+	printf("\ninstructions:%d\n", i);
 	free(prog);
 	free(tape);
 	return EXIT_SUCCESS;
