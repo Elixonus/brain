@@ -1,1 +1,1 @@
-./bin/brain gol.b
+./bin/brain mandelbrot.b
