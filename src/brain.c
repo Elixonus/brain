@@ -72,6 +72,7 @@ int main(int argc, char** argv)
 						return EXIT_FAILURE;
 					}
 					memcpy(swap + bulk, swap, bulk);
+					memset(swap, 0, bulk);
 					cell += swap - tape + bulk;
 					tape = swap;
 					bulk *= 2;
@@ -109,35 +110,51 @@ int main(int argc, char** argv)
 			case '[':
 				if(*cell == 0)
 				{
-					while(*inst != ']')
+					for(int loop = 0; inst < prog + size; inst++)
 					{
-						inst++;
+						if(*inst == '[')
+						{
+							loop++;
+						}
+						else if(*inst == ']')
+						{
+							loop--;
+							if(loop == 0)
+							{
+								break;
+							}
+						}
 					}
 				}
 				break;
 			case ']':
 				if(*cell != 0)
 				{
-					while(*inst != '[')
+					for(int loop = 0; inst >= prog; inst--)
 					{
-						inst--;
+						if(*inst == ']')
+						{
+							loop++;
+						}
+						else if(*inst == '[')
+						{
+							loop--;
+							if(loop == 0)
+							{
+								break;
+							}
+						}
 					}
 				}
 				break;
 			case '.':
 				fputc(*cell, stdout);
-				//fprintf(stdout, "number:%d\n", *cell);
 				break;
 			case ',':
 				*cell = fgetc(stdin);
 				break;
-			default:
-				i--;
-				break;
 		}
-		i++;
 	}
-	printf("\ninstructions:%d\n", i);
 	free(prog);
 	free(tape);
 	return EXIT_SUCCESS;
