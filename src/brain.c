@@ -61,6 +61,21 @@ int main(int argc, char** argv)
 	{
 		switch(*inst)
 		{
+			case '>':
+				cell++;
+				if(cell >= tape + bulk)
+				{
+					char *swap = realloc(tape, bulk * 2);
+					if(swap == NULL)
+					{
+						fprintf(stderr, "(@): realloc error (%dB)\n", bulk * 2);
+						return EXIT_FAILURE;
+					}
+					cell += swap - tape;
+					tape = swap;
+					bulk *= 2;
+				}
+				break;
 			case '<':
 				cell--;
 				if(cell < tape)
@@ -78,31 +93,16 @@ int main(int argc, char** argv)
 					bulk *= 2;
 				}
 				break;
-			case '>':
-				cell++;
-				if(cell >= tape + bulk)
+			case '+':
+				(*cell)++;
+				if(*cell >= 256)
 				{
-					char *swap = realloc(tape, bulk * 2);
-					if(swap == NULL)
-					{
-						fprintf(stderr, "(@): realloc error (%dB)\n", bulk * 2);
-						return EXIT_FAILURE;
-					}
-					cell += swap - tape;
-					tape = swap;
-					bulk *= 2;
+					*cell %= 256;
 				}
 				break;
 			case '-':
 				(*cell)--;
 				if(*cell < 0)
-				{
-					*cell %= 256;
-				}
-				break;
-			case '+':
-				(*cell)++;
-				if(*cell >= 256)
 				{
 					*cell %= 256;
 				}
